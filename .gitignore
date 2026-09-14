@@ -1,0 +1,8 @@
+bookings.json
+*bookings*.json
+*.gpx
+*.ods
+*.pdf
+*.zip
+originals/
+.DS_Store
