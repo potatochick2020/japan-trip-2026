@@ -98,7 +98,7 @@
   }
   function tableHTML(rows, title, total) {
     if (!rows.length) return `<div class="restaurant-empty"><h3>${total ? '沒有符合篩選條件的餐廳' : '主清單暫未有完整核實的餐廳'}</h3><p>${total ? '可調整條件或按「重設篩選」。' : '已查閱的候選及尚欠證據列於下方；未核實店家不會補入目標名額。'}</p></div>`;
-    return `<div class="restaurant-horizontal-scroll" tabindex="0" role="region" aria-label="${escape(title)}，左右捲動表格"><div></div></div><div class="restaurant-table-scroll" tabindex="0" role="region" aria-label="${escape(title)}，可捲動"><table class="restaurant-table" aria-label="${escape(title)}"><thead><tr><th scope="col"${sortAttribute('name')}>${sortButton('name', '餐廳／地址')}</th><th scope="col"${sortAttribute('cuisine')}>${sortButton('cuisine', '料理／招牌菜')}</th><th scope="col"${sortAttribute('rating', 'reviews')}>${sortButton('rating', 'Google 評分')}${sortButton('reviews', '評論數', true)}</th><th scope="col"${sortAttribute('price')}>${sortButton('price', '每人餐費')}</th><th scope="col">營業時間<br><span class="small">到訪星期／預定時間</span></th><th scope="col"${sortAttribute('distance')}>${sortButton('distance', '路程／交通')}</th><th scope="col">泊車</th><th scope="col">禁菸</th><th scope="col">如何訂位</th><th scope="col">店舖／菜單連結 ↗</th><th scope="col">台灣／香港食記</th></tr></thead><tbody>${rows.map(rowHTML).join('')}</tbody></table></div>`;
+    return `<div class="restaurant-horizontal-scroll"><input type="range" min="0" max="0" value="0" step="1" aria-label="${escape(title)}，左右捲動表格"></div><div class="restaurant-table-scroll" tabindex="0" role="region" aria-label="${escape(title)}，可捲動"><table class="restaurant-table" aria-label="${escape(title)}"><thead><tr><th scope="col"${sortAttribute('name')}>${sortButton('name', '餐廳／地址')}</th><th scope="col"${sortAttribute('cuisine')}>${sortButton('cuisine', '料理／招牌菜')}</th><th scope="col"${sortAttribute('rating', 'reviews')}>${sortButton('rating', 'Google 評分')}${sortButton('reviews', '評論數', true)}</th><th scope="col"${sortAttribute('price')}>${sortButton('price', '每人餐費')}</th><th scope="col">營業時間<br><span class="small">到訪星期／預定時間</span></th><th scope="col"${sortAttribute('distance')}>${sortButton('distance', '路程／交通')}</th><th scope="col">泊車</th><th scope="col">禁菸</th><th scope="col">如何訂位</th><th scope="col">店舖／菜單連結 ↗</th><th scope="col">台灣／香港食記</th></tr></thead><tbody>${rows.map(rowHTML).join('')}</tbody></table></div>`;
   }
   function filtered(rows) {
     const search = value('search').trim().toLocaleLowerCase();
@@ -127,10 +127,11 @@
       const rail = list.querySelector('.restaurant-horizontal-scroll');
       const table = list.querySelector('.restaurant-table-scroll');
       if (!rail || !table) continue;
-      if (table.scrollWidth) rail.firstElementChild.style.width = table.scrollWidth + 'px';
-      rail.addEventListener('scroll', () => { table.scrollLeft = rail.scrollLeft; });
-      table.addEventListener('scroll', () => { rail.scrollLeft = table.scrollLeft; });
+      const slider = rail.querySelector('input');
+      slider.addEventListener('input', () => { table.scrollLeft = Number(slider.value); });
+      table.addEventListener('scroll', () => { slider.value = table.scrollLeft; });
     }
+    resizeScrollRails();
     field('pending').hidden = !pending.length;
     field('pending-title').textContent = `待核實候選 · 顯示 ${pendingShown.length}／${pending.length} 間`;
     field('count').textContent = `已核實：顯示 ${mainShown.length}／${main.length} 間 · 目標 ${locationData().target} 間；待核實：${pendingShown.length}／${pending.length} 間`;
@@ -138,7 +139,10 @@
   function resizeScrollRails() {
     for (const rail of page.querySelectorAll('.restaurant-horizontal-scroll')) {
       const table = rail.nextElementSibling;
-      if (table.scrollWidth) rail.firstElementChild.style.width = table.scrollWidth + 'px';
+      const slider = rail.querySelector('input');
+      slider.max = Math.max(0, table.scrollWidth - table.clientWidth);
+      slider.disabled = Number(slider.max) === 0;
+      slider.value = table.scrollLeft;
     }
   }
   function selectLocation(id) {
@@ -164,6 +168,7 @@
     if (id !== locationId || !q('[data-location]')) selectLocation(id);
     document.body.classList.add('restaurants-view');
     page.hidden = false;
+    resizeScrollRails();
     document.getElementById('nav-restaurants').setAttribute('aria-current', 'page');
     if (focus) q('h1').focus({preventScroll: true});
     window.scrollTo({top: 0, behavior: 'instant'});

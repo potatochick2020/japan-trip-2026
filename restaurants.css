@@ -102,8 +102,9 @@ body.restaurants-view .dates, body.restaurants-view main > :not(#restaurants) { 
   .restaurant-detail-grid { grid-template-columns: minmax(0, 1fr); gap: 15px; }
 }
 
-.restaurant-horizontal-scroll { height: 18px; overflow-x: scroll; overflow-y: hidden; margin: 0 0 6px; border-radius: 5px; scrollbar-color: #547985 #e3edef; scrollbar-width: auto; }
-.restaurant-horizontal-scroll > div { height: 1px; width: 2355px; }
-.restaurant-horizontal-scroll::-webkit-scrollbar { height: 14px; }
-.restaurant-horizontal-scroll::-webkit-scrollbar-track { background: #e3edef; }
-.restaurant-horizontal-scroll::-webkit-scrollbar-thumb { background: #547985; border: 3px solid #e3edef; border-radius: 8px; }
+.restaurant-horizontal-scroll { height: 18px; margin: 0 0 6px; }
+.restaurant-horizontal-scroll input { appearance: none; -webkit-appearance: none; display: block; width: 100%; height: 14px; padding: 0; margin: 0; background: #dbe7ea; border: 0; border-radius: 7px; cursor: ew-resize; }
+.restaurant-horizontal-scroll input::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 64px; height: 14px; background: #547985; border: 0; border-radius: 7px; }
+.restaurant-horizontal-scroll input::-moz-range-thumb { width: 64px; height: 14px; background: #547985; border: 0; border-radius: 7px; }
+.restaurant-horizontal-scroll input:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+.restaurant-horizontal-scroll input:disabled { opacity: .3; cursor: default; }
