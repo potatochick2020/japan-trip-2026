@@ -111,6 +111,7 @@
       for (const key of ['name', 'type', 'status', 'number', 'summary', 'source', 'qr']) string(a[key], `附件 ${key}`);
       checkDates(a.dates, '附件');
       requireFile(a.file);
+      if (a.booking_details != null) object(a.booking_details, '附件私人預訂資料');
     }
     for (const hotel of bundle.hotels) {
       for (const key of ['name', 'address', 'japanese_address', 'stay', 'checkin', 'checkout', 'entry', 'owner']) string(hotel[key], `住宿 ${key}`);
